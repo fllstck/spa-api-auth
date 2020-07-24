@@ -3,6 +3,8 @@
 This example illustrates API authentication for
 APIs that are hosted on Cloudflare workers.
 
+More details can be found in [this article](https://dev.to/fllstck/api-auth-for-spas-with-auth0-on-cloudflare-workers-5hmh).
+
 ## Prerequisites
 
 - Cloudflare Account
