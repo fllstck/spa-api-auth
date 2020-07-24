@@ -1,0 +1,6 @@
+index.js
+wrangler.toml
+setkeyenv.sh
+my.credentials.json
+
+node_modules

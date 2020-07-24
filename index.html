@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<meta charset="utf-8" />
+<script src="https://cdn.auth0.com/js/lock/11.25/lock.min.js"></script>
+<title>Kitten Images</title>
+
+<h1>Sign Up for More Kittens!</h1>
+
+<button id="login-button" hidden>Log in</button>
+<button id="logout-button" hidden>Log out</button>
+
+<h2>Public</h2>
+<div id="public">Loading...</div>
+
+<h2>Private</h2>
+<div id="private">Loading...</div>
+
+<script>
+  fetch("/api/public")
+    .then((r) => r.json())
+    .then(({ title, url }) => {
+      document.getElementById("public").innerHTML =
+        '<img src="' + url + '" title="' + title + '">';
+    });
+
+  fetch("/api/private")
+    .then((r) => r.json())
+    .then((data) => {
+      if (data.error) {
+        document.getElementById("private").innerHTML = data.error;
+        return;
+      }
+      document.getElementById("private").innerHTML =
+        '<img src="' + data.url + '" title="' + data.title + '">';
+    });
+
+  const audience = location.protocol + "//" + location.hostname + "/api";
+  const lockWidget = new Auth0Lock("%AUTH0_CLIENT_ID%", "%AUTH0_DOMAIN%", {
+    auth: {
+      responseType: "id_token",
+      params: { scope: "openid", audience },
+    },
+  });
+
+  const loginButton = document.getElementById("login-button");
+  loginButton.addEventListener("click", () => lockWidget.show());
+
+  const logoutButton = document.getElementById("logout-button");
+  logoutButton.addEventListener("click", () => lockWidget.logout());
+
+  // after login
+  lockWidget.on("authenticated", afterAuth);
+
+  // after refresh
+  lockWidget.checkSession({}, (error, authResult) => {
+    if (error || !authResult) {
+      logoutButton.hidden = true;
+      loginButton.hidden = false;
+      return;
+    }
+
+    afterAuth(authResult);
+  });
+
+  function afterAuth({ idToken }) {
+    logoutButton.hidden = false;
+    loginButton.hidden = true;
+
+    fetch("/api/private", { headers: { Authorization: "Bearer " + idToken } })
+      .then((r) => r.json())
+      .then(({ title, url }) => {
+        document.getElementById("private").innerHTML =
+          '<img src="' + url + '" title="' + title + '">';
+      });
+  }
+</script>

@@ -1,0 +1,15 @@
+{
+  "name": "spa-api-auth",
+  "version": "1.0.0",
+  "description": "API authentication for SPAs with Auth0 on Cloudflare Workers",
+  "main": "index.js",
+  "scripts": {
+    "setup": "node setup",
+    "start": "npm run setup && source setkeyenv.sh && wrangler publish"
+  },
+  "author": "Kay Plößer",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/wrangler": "^1.10.3"
+  }
+}
